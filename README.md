@@ -1,6 +1,8 @@
 # GraphQL Profile Project
 
-A React application that displays your school profile information using GraphQL queries. This project includes authentication, user profile display, and statistics visualization.
+A modern, interactive profile page that displays your school information using GraphQL queries. This project demonstrates GraphQL querying, JWT authentication, and SVG-based data visualization.
+
+**Built with vanilla JavaScript, HTML, and CSS** - no React, no Node.js, no build tools required!
 
 ## 🎯 Project Objectives
 
@@ -14,25 +16,9 @@ A React application that displays your school profile information using GraphQL 
 
 ```
 graphql/
-├── index.html              # Main HTML file
-├── package.json            # Dependencies and scripts
-├── vite.config.js          # Vite configuration
-├── src/
-│   ├── main.jsx            # Application entry point
-│   ├── App.jsx             # Main app component with routing
-│   ├── components/         # React components
-│   │   ├── Login.jsx       # Login form component
-│   │   ├── Profile.jsx     # Profile display component
-│   │   ├── Statistics.jsx  # Statistics graphs (Phase 3)
-│   │   ├── Login.css       # Login styles
-│   │   └── Profile.css     # Profile styles
-│   ├── services/           # API services
-│   │   ├── auth.js         # Authentication functions
-│   │   └── graphql.js      # GraphQL queries (Phase 2)
-│   ├── utils/              # Utility functions
-│   │   └── storage.js       # JWT token storage
-│   └── styles/
-│       └── app.css         # Global styles
+├── index.html          # Main HTML file
+├── styles.css           # All CSS styles
+├── app.js              # All JavaScript functionality
 └── README.md
 ```
 
@@ -40,72 +26,58 @@ graphql/
 
 ### Prerequisites
 
-- Node.js (version 16 or higher)
-- npm or yarn package manager
+- A modern web browser (Chrome, Firefox, Safari, Edge)
+- A web server (for local development) or just open `index.html` directly
+- Access to the Zone01 platform API
 
 ### Installation
 
-1. Install dependencies:
-```bash
-npm install
-```
+1. **Clone or download this repository**
 
-2. Configure your domain:
-   - Open `src/services/auth.js`
-   - Replace `YOUR_DOMAIN` with your actual domain (e.g., `learn.01founders.com`)
+2. **Open the project:**
+   - **Option 1 (Recommended)**: Use a local web server
+     ```bash
+     # Using Python 3
+     python -m http.server 8000
+     
+     # Using Python 2
+     python -m SimpleHTTPServer 8000
+     
+     # Using Node.js (if you have http-server installed)
+     npx http-server -p 8000
+     ```
+     Then open `http://localhost:8000` in your browser
+   
+   - **Option 2**: Simply open `index.html` directly in your browser
+     - Note: Some browsers may block CORS requests when opening files directly
+     - For production, always use a web server
 
-3. Start the development server:
-```bash
-npm run dev
-```
+3. **Configure the domain** (if needed):
+   - The domain is set to `platform.zone01.gr` in `app.js`
+   - If you need to change it, edit the `DOMAIN` constant in `app.js`
 
-4. Open your browser and navigate to `http://localhost:3000`
+## 📚 Features
 
-## 📚 Learning Guide
+### Authentication
+- Login with username/email and password
+- JWT token storage in browser localStorage
+- Automatic token expiration checking
+- Secure logout functionality
 
-### Phase 1: Authentication (✅ Completed)
+### Profile Display
+- **Student Information**: Name, login, email
+- **Total XP**: XP points earned in div-01
+- **Audit Ratio**: Done vs Received audits
+- **Top Skills**: Top 5 skills with percentages
 
-**What we built:**
-- Login page with form handling
-- JWT token storage
-- Authentication service
-- Routing between login and profile pages
+### Statistics & Visualizations
+- **XP by Project**: Horizontal bar chart showing XP earned per project
+- **Piscine Stats**: 
+  - Pass/Fail ratio donut chart
+  - Exercise attempts bar chart
+- **Technologies**: Horizontal bar chart showing XP by technology
 
-**Key React Concepts Learned:**
-- **Components**: Reusable UI pieces (Login, Profile)
-- **useState**: Managing component state (form inputs, error messages)
-- **useEffect**: Running code on component load
-- **Event Handlers**: Handling user interactions (onSubmit, onChange)
-- **JSX**: Writing HTML-like syntax in JavaScript
-- **Props**: Passing data between components
-
-**Files Created:**
-- `src/components/Login.jsx` - Login form component
-- `src/components/Profile.jsx` - Profile placeholder
-- `src/services/auth.js` - Authentication logic
-- `src/utils/storage.js` - Token management
-- `src/App.jsx` - Main app with routing
-
-### Phase 2: GraphQL Integration (Next Step)
-
-**What we'll build:**
-- GraphQL query service
-- Fetching user data (XP, grades, audits, skills)
-- Displaying data in Profile component
-
-**What you'll learn:**
-- GraphQL query syntax
-- Making authenticated API requests
-- Handling GraphQL responses
-- Decoding JWT tokens
-
-### Phase 3: Statistics & Graphs (Future)
-
-**What we'll build:**
-- SVG graph components
-- XP over time graph
-- Audit ratio graph
-- Interactive/animated graphs
+All charts are interactive SVG visualizations with smooth animations.
 
 ## 🔑 How Authentication Works
 
@@ -115,44 +87,97 @@ npm run dev
 4. **Receive JWT** → Token saved to localStorage
 5. **Token used** → Sent with every GraphQL request
 
-## 🛠️ Available Scripts
+## 🛠️ Technical Details
 
-- `npm run dev` - Start development server
-- `npm run build` - Build for production
-- `npm run preview` - Preview production build
+### GraphQL Queries
+The app uses several GraphQL queries to fetch:
+- User information (name, login, email)
+- XP transactions (total and by project)
+- Skills data
+- Audit ratios
+- Piscine progress
+- Technology usage
 
-## 📝 Next Steps
+### SVG Charts
+All charts are created using vanilla JavaScript and SVG:
+- Dynamic SVG element creation
+- Smooth animations using SVG `<animate>` elements
+- Responsive design with viewBox
+- Interactive hover effects
 
-1. **Update Domain**: Edit `src/services/auth.js` and replace `YOUR_DOMAIN`
-2. **Test Login**: Try logging in with your credentials
-3. **Phase 2**: We'll add GraphQL queries to fetch your data
-4. **Phase 3**: We'll create beautiful SVG graphs
+### No Dependencies
+This project uses only:
+- **HTML5** for structure
+- **CSS3** for styling
+- **Vanilla JavaScript (ES6+)** for functionality
+- **SVG** for data visualization
+
+No frameworks, no build tools, no package managers required!
+
+## 📝 File Structure Explained
+
+- **index.html**: Contains the login and profile page structure
+- **styles.css**: All CSS styles for login, profile, and charts
+- **app.js**: Contains all JavaScript code organized into modules:
+  - `storage`: Token management utilities
+  - `auth`: Authentication functions
+  - `graphql`: GraphQL query functions
+  - `ui`: DOM manipulation and chart rendering
+  - `app`: Main application logic
 
 ## 🐛 Troubleshooting
 
 **Login not working?**
-- Check that you've updated `YOUR_DOMAIN` in `auth.js`
+- Check that you have internet connection
 - Verify your credentials are correct
-- Check browser console for error messages
+- Check browser console for error messages (F12 → Console)
+- Ensure CORS is not blocking requests (use a web server, not file://)
 
 **Token not saving?**
 - Check browser localStorage (DevTools → Application → Local Storage)
 - Ensure no browser extensions are blocking storage
+- Try a different browser
+
+**Charts not displaying?**
+- Check browser console for JavaScript errors
+- Ensure GraphQL queries are returning data
+- Verify SVG support in your browser
+
+**CORS errors?**
+- Always use a web server, not file:// protocol
+- The API must allow requests from your origin
+- Check browser console for specific CORS error messages
 
 ## 📖 Resources
 
-- [React Documentation](https://react.dev)
 - [GraphQL Documentation](https://graphql.org/learn/)
 - [JWT.io](https://jwt.io) - JWT token decoder
+- [MDN Web Docs](https://developer.mozilla.org/) - HTML, CSS, JavaScript reference
+- [SVG Tutorial](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial)
 
 ## 🎓 Learning Tips
 
-- Read the comments in each file - they explain React concepts
-- Experiment with the code - change values and see what happens
-- Use browser DevTools to inspect components and network requests
-- Ask questions when you're stuck!
+- Open browser DevTools (F12) to see network requests and console logs
+- Inspect the GraphQL queries in `app.js` to understand the data structure
+- Experiment with the SVG chart code to customize visualizations
+- Check localStorage to see how JWT tokens are stored
+- Read the comments in `app.js` to understand each function
+
+## 🌐 Deployment
+
+To deploy this project:
+
+1. **Static Hosting**: Upload `index.html`, `styles.css`, and `app.js` to any static hosting service:
+   - GitHub Pages
+   - Netlify
+   - Vercel
+   - AWS S3
+   - Any web server
+
+2. **No Build Step Required**: Since it's vanilla JS, just upload the files!
+
+3. **HTTPS Required**: For production, ensure your site uses HTTPS (required for secure API calls)
 
 ---
 
 **Happy Coding! 🚀**
-

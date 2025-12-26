@@ -69,7 +69,8 @@ const ui = {
         if (latestProjectsContainer && latestProjects && latestProjects.length > 0) {
             latestProjectsContainer.innerHTML = ''
             try {
-                const latestChart = this.createLatestProjectsChart(latestProjects, true)
+                const totalXP = xp?.total || 0
+                const latestChart = this.createLatestProjectsChart(latestProjects, true, totalXP)
                 if (latestChart) {
                     latestProjectsContainer.appendChild(latestChart)
                 }
@@ -127,64 +128,156 @@ const ui = {
         }
     },
 
-    // Create Latest Projects Chart (bar chart, similar to XP by Project)
-    createLatestProjectsChart(data, compact = false) {
+    // Create Latest Projects Chart (dot plot chart)
+    createLatestProjectsChart(data, compact = false, totalXP = 0) {
+        if (!data || data.length === 0) {
+            return document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+        }
+
+        const padding = { top: 40, right: 40, bottom: 60, left: 100 }
+        const chartWidth = compact ? 300 : 450
+        const chartHeight = Math.max(220, data.length * 40 + padding.top + padding.bottom)
+        const plotWidth = chartWidth - padding.left - padding.right
+        const plotHeight = chartHeight - padding.top - padding.bottom
+
         const maxXP = Math.max(...data.map(p => p.xp), 1)
-        const chartWidth = compact ? 400 : 600
-        const barHeight = compact ? 20 : 30
-        const spacing = compact ? 10 : 15
-        const labelWidth = compact ? 120 : 150
-        const chartHeight = data.length * (barHeight + spacing)
+        const dotRadius = 6
+        const projectSpacing = plotHeight / data.length
 
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
         svg.setAttribute('viewBox', `0 0 ${chartWidth} ${chartHeight}`)
-        svg.className = compact ? 'chart-svg compact-chart' : 'chart-svg'
+        svg.className = compact ? 'chart-svg compact-chart dot-plot-svg' : 'chart-svg dot-plot-svg'
 
+        // Draw grid lines
+        const gridLines = document.createElementNS('http://www.w3.org/2000/svg', 'g')
+        gridLines.className = 'grid-lines'
+
+        // Horizontal grid lines (one per project)
+        for (let i = 0; i <= data.length; i++) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+            const y = padding.top + (i * projectSpacing)
+            line.setAttribute('x1', padding.left)
+            line.setAttribute('y1', y)
+            line.setAttribute('x2', chartWidth - padding.right)
+            line.setAttribute('y2', y)
+            line.setAttribute('stroke', '#e0e0e0')
+            line.setAttribute('stroke-width', '1')
+            if (i === data.length) {
+                line.setAttribute('stroke', '#999')
+                line.setAttribute('stroke-width', '2')
+            }
+            gridLines.appendChild(line)
+        }
+
+        // Vertical grid lines (5 lines)
+        const numGridLines = 5
+        for (let i = 0; i <= numGridLines; i++) {
+            const line = document.createElementNS('http://www.w3.org/2000/svg', 'line')
+            const xpValue = (maxXP / numGridLines) * i
+            const x = padding.left + (xpValue / maxXP) * plotWidth
+            line.setAttribute('x1', x)
+            line.setAttribute('y1', padding.top)
+            line.setAttribute('x2', x)
+            line.setAttribute('y2', chartHeight - padding.bottom)
+            line.setAttribute('stroke', '#e0e0e0')
+            line.setAttribute('stroke-width', '1')
+            if (i === 0) {
+                line.setAttribute('stroke', '#999')
+                line.setAttribute('stroke-width', '2')
+            }
+            gridLines.appendChild(line)
+
+            // X-axis labels
+            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+            label.setAttribute('x', x)
+            label.setAttribute('y', chartHeight - padding.bottom + 20)
+            label.setAttribute('text-anchor', 'middle')
+            label.setAttribute('class', 'axis-label')
+            label.textContent = Math.round(xpValue).toLocaleString()
+            gridLines.appendChild(label)
+        }
+
+        svg.appendChild(gridLines)
+
+        // Draw dots and project labels
         data.forEach((project, index) => {
-            const barWidth = (project.xp / maxXP) * (chartWidth - labelWidth - 80)
-            const y = index * (barHeight + spacing)
+            const y = padding.top + (index * projectSpacing) + (projectSpacing / 2)
+            const x = padding.left + (project.xp / maxXP) * plotWidth
 
-            const g = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-            g.className = 'bar-group'
+            // Draw dot
+            const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
+            circle.setAttribute('cx', x)
+            circle.setAttribute('cy', y)
+            circle.setAttribute('r', '0')
+            circle.setAttribute('fill', `hsl(${220 + (index * 360 / data.length)}, 70%, 50%)`)
+            circle.className = 'dot-plot-dot'
+            circle.setAttribute('data-name', project.name)
+            circle.setAttribute('data-xp', project.xp)
 
-            const text = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-            text.setAttribute('x', '0')
-            text.setAttribute('y', y + barHeight / 2)
-            text.setAttribute('dy', '0.35em')
-            text.className = compact ? 'bar-label-small' : 'bar-label'
-            const maxNameLength = compact ? 15 : 25
-            text.textContent = project.name.length > maxNameLength
-                ? project.name.substring(0, maxNameLength) + '...'
-                : project.name
-
-            const rect = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-            rect.setAttribute('x', labelWidth)
-            rect.setAttribute('y', y)
-            rect.setAttribute('width', barWidth)
-            rect.setAttribute('height', barHeight)
-            rect.className = 'bar-fill'
-            rect.setAttribute('fill', `hsl(${220 + index * 10}, 70%, 60%)`)
-
+            // Animate dot appearance
             const animate = document.createElementNS('http://www.w3.org/2000/svg', 'animate')
-            animate.setAttribute('attributeName', 'width')
+            animate.setAttribute('attributeName', 'r')
             animate.setAttribute('from', '0')
-            animate.setAttribute('to', barWidth)
-            animate.setAttribute('dur', '1s')
+            animate.setAttribute('to', dotRadius)
+            animate.setAttribute('dur', '0.5s')
             animate.setAttribute('fill', 'freeze')
-            rect.appendChild(animate)
+            circle.appendChild(animate)
 
-            const valueText = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-            valueText.setAttribute('x', barWidth + labelWidth + 10)
-            valueText.setAttribute('y', y + barHeight / 2)
-            valueText.setAttribute('dy', '0.35em')
-            valueText.className = compact ? 'bar-value-small' : 'bar-value'
-            valueText.textContent = compact ? `${project.xp.toLocaleString()}` : `${project.xp.toLocaleString()} XP`
+            // Hover effect
+            circle.style.cursor = 'pointer'
+            circle.style.transition = 'r 0.2s'
+            circle.addEventListener('mouseenter', function () {
+                this.setAttribute('r', dotRadius * 1.5)
+            })
+            circle.addEventListener('mouseleave', function () {
+                this.setAttribute('r', dotRadius)
+            })
 
-            g.appendChild(text)
-            g.appendChild(rect)
-            g.appendChild(valueText)
-            svg.appendChild(g)
+            svg.appendChild(circle)
+
+            // Project name label (Y-axis) - full name with text wrapping using foreignObject
+            const foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject')
+            foreignObject.setAttribute('x', '0')
+            foreignObject.setAttribute('y', (y - 15).toString())
+            foreignObject.setAttribute('width', (padding.left - 10).toString())
+            foreignObject.setAttribute('height', '30')
+
+            const div = document.createElement('div')
+            div.className = 'project-label-wrapper'
+            div.textContent = project.name
+            foreignObject.appendChild(div)
+            svg.appendChild(foreignObject)
+
+            // Ratio text: "xp/totalXP" next to the dot
+            if (totalXP > 0) {
+                const ratioText = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+                ratioText.setAttribute('x', x + dotRadius + 8)
+                ratioText.setAttribute('y', y)
+                ratioText.setAttribute('dominant-baseline', 'middle')
+                ratioText.setAttribute('class', 'dot-ratio-text')
+                ratioText.textContent = `${project.xp.toLocaleString()}/${totalXP.toLocaleString()}`
+                svg.appendChild(ratioText)
+            }
         })
+
+        // X-axis label
+        const xAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+        xAxisLabel.setAttribute('x', chartWidth / 2)
+        xAxisLabel.setAttribute('y', chartHeight - 10)
+        xAxisLabel.setAttribute('text-anchor', 'middle')
+        xAxisLabel.setAttribute('class', 'axis-title')
+        xAxisLabel.textContent = 'total xp'
+        svg.appendChild(xAxisLabel)
+
+        // Y-axis label
+        const yAxisLabel = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+        yAxisLabel.setAttribute('x', 15)
+        yAxisLabel.setAttribute('y', chartHeight / 2)
+        yAxisLabel.setAttribute('text-anchor', 'middle')
+        yAxisLabel.setAttribute('transform', `rotate(-90, 15, ${chartHeight / 2})`)
+        yAxisLabel.setAttribute('class', 'axis-title')
+        yAxisLabel.textContent = 'project name'
+        svg.appendChild(yAxisLabel)
 
         return svg
     },
@@ -195,9 +288,9 @@ const ui = {
             return document.createElementNS('http://www.w3.org/2000/svg', 'svg')
         }
 
-        const size = 300
+        const size = 180
         const center = size / 2
-        const radius = 100
+        const radius = 50
         const innerRadius = 0 // For donut effect (set to 0 for full pie)
 
         // Calculate total XP
@@ -277,7 +370,7 @@ const ui = {
         const legend = document.createElement('div')
         legend.className = 'pie-legend'
 
-  
+
 
         container.appendChild(svg)
         container.appendChild(legend)
@@ -306,7 +399,7 @@ const ui = {
     // Create Audit Ratio Gauge Chart
     createAuditRatioGauge(auditData) {
         const { up, down, ratio } = auditData
-        const size = 200
+        const size = 190
         const center = size / 2
         const radius = 70
         const strokeWidth = 20

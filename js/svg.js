@@ -36,7 +36,7 @@ const ui = {
     },
 
     updateProfile(data) {
-        const { user, xp, skills, audit, projects, piscine, technologies } = data
+        const { user, xp, skills, audit, projects, latestProjects } = data
 
         // User info
         document.getElementById('user-name').textContent = user?.name || 'N/A'
@@ -49,17 +49,32 @@ const ui = {
         // XP
         document.getElementById('xp-total').textContent = xp?.total?.toLocaleString() || '0'
 
-        // XP Projects SVG
+        // XP Projects SVG - Pie Chart (all projects)
         const xpProjectsContainer = document.getElementById('xp-projects-svg-container')
         if (xpProjectsContainer && projects && projects.length > 0) {
             xpProjectsContainer.innerHTML = ''
             try {
-                const xpChart = this.createXPByProjectChart(projects, true) // true for compact version
+                // Use all projects for pie chart
+                const xpChart = this.createXPByProjectPieChart(projects)
                 if (xpChart) {
                     xpProjectsContainer.appendChild(xpChart)
                 }
             } catch (error) {
-                console.error('Error creating XP projects chart:', error)
+                console.error('Error creating XP projects pie chart:', error)
+            }
+        }
+
+        // Latest Projects SVG - Bar Chart (top 5 latest)
+        const latestProjectsContainer = document.getElementById('xp-latest-projects-svg-container')
+        if (latestProjectsContainer && latestProjects && latestProjects.length > 0) {
+            latestProjectsContainer.innerHTML = ''
+            try {
+                const latestChart = this.createLatestProjectsChart(latestProjects, true)
+                if (latestChart) {
+                    latestProjectsContainer.appendChild(latestChart)
+                }
+            } catch (error) {
+                console.error('Error creating latest projects chart:', error)
             }
         }
 
@@ -105,29 +120,27 @@ const ui = {
 
     },
 
-    renderStatistics(projects, piscine, technologies) {
+    renderStatistics(projectss) {
         const chartsGrid = document.getElementById('charts-grid')
         if (chartsGrid) {
             chartsGrid.innerHTML = ''
         }
     },
 
-    createXPByProjectChart(data, compact = false) {
+    // Create Latest Projects Chart (bar chart, similar to XP by Project)
+    createLatestProjectsChart(data, compact = false) {
         const maxXP = Math.max(...data.map(p => p.xp), 1)
-        // Use smaller dimensions for compact version (in cards)
         const chartWidth = compact ? 400 : 600
         const barHeight = compact ? 20 : 30
         const spacing = compact ? 10 : 15
         const labelWidth = compact ? 120 : 150
         const chartHeight = data.length * (barHeight + spacing)
-        // Limit to top 5 for compact version
-        const displayData = compact ? data.slice(0, 5) : data
 
         const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
         svg.setAttribute('viewBox', `0 0 ${chartWidth} ${chartHeight}`)
         svg.className = compact ? 'chart-svg compact-chart' : 'chart-svg'
 
-        displayData.forEach((project, index) => {
+        data.forEach((project, index) => {
             const barWidth = (project.xp / maxXP) * (chartWidth - labelWidth - 80)
             const y = index * (barHeight + spacing)
 
@@ -176,7 +189,100 @@ const ui = {
         return svg
     },
 
+    // Create XP by Project Pie Chart (all projects)
+    createXPByProjectPieChart(data) {
+        if (!data || data.length === 0) {
+            return document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+        }
 
+        const size = 300
+        const center = size / 2
+        const radius = 100
+        const innerRadius = 0 // For donut effect (set to 0 for full pie)
+
+        // Calculate total XP
+        const totalXP = data.reduce((sum, project) => sum + project.xp, 0)
+        if (totalXP === 0) {
+            return document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+        }
+
+        const container = document.createElement('div')
+        container.className = 'pie-chart-container'
+
+        const svg = document.createElementNS('http://www.w3.org/2000/svg', 'svg')
+        svg.setAttribute('viewBox', `0 0 ${size} ${size}`)
+        svg.className = 'chart-svg pie-chart-svg'
+
+        let currentAngle = -90 // Start at top
+
+        data.forEach((project, index) => {
+            const percentage = (project.xp / totalXP) * 100
+            const angle = (project.xp / totalXP) * 360
+
+            // Create donut segment path
+            const startAngle = currentAngle
+            const endAngle = currentAngle + angle
+
+            // Calculate points for outer and inner arcs
+            const outerStart = this.polarToCartesian(center, center, radius, startAngle)
+            const outerEnd = this.polarToCartesian(center, center, radius, endAngle)
+            const innerStart = this.polarToCartesian(center, center, innerRadius, endAngle)
+            const innerEnd = this.polarToCartesian(center, center, innerRadius, startAngle)
+
+            const largeArcFlag = angle > 180 ? "1" : "0"
+
+            // Create donut segment path: outer arc -> line to inner -> inner arc (reverse) -> close
+            const fullPath = [
+                "M", outerStart.x, outerStart.y,
+                "A", radius, radius, 0, largeArcFlag, 1, outerEnd.x, outerEnd.y,
+                "L", innerStart.x, innerStart.y,
+                "A", innerRadius, innerRadius, 0, largeArcFlag, 0, innerEnd.x, innerEnd.y,
+                "Z"
+            ].join(" ")
+
+            const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path')
+            pathEl.setAttribute('d', fullPath)
+            pathEl.setAttribute('fill', `hsl(${index * 360 / data.length}, 70%, 60%)`)
+            pathEl.className = 'pie-segment'
+            pathEl.setAttribute('data-name', project.name)
+            pathEl.setAttribute('data-xp', project.xp)
+            pathEl.setAttribute('data-percentage', percentage.toFixed(1))
+
+            // Add hover effect
+            pathEl.style.cursor = 'pointer'
+            pathEl.style.transition = 'opacity 0.2s'
+            pathEl.addEventListener('mouseenter', function () {
+                this.style.opacity = '0.8'
+            })
+            pathEl.addEventListener('mouseleave', function () {
+                this.style.opacity = '1'
+            })
+
+            // Animate the path
+            const animate = document.createElementNS('http://www.w3.org/2000/svg', 'animate')
+            animate.setAttribute('attributeName', 'd')
+            animate.setAttribute('from', `M ${center} ${center} L ${center} ${center} Z`)
+            animate.setAttribute('to', fullPath)
+            animate.setAttribute('dur', '1s')
+            animate.setAttribute('fill', 'freeze')
+            pathEl.appendChild(animate)
+
+            svg.appendChild(pathEl)
+
+            currentAngle += angle
+        })
+
+
+        // Create legend
+        const legend = document.createElement('div')
+        legend.className = 'pie-legend'
+
+  
+
+        container.appendChild(svg)
+        container.appendChild(legend)
+        return container
+    },
 
     // Helper function for arc paths
     describeArc(x, y, radius, startAngle, endAngle) {

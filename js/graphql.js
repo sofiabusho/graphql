@@ -74,12 +74,14 @@ const graphql = {
                     where: { 
                         type: { _eq: "xp" }
                         object: { type: { _eq: "project" } }
+                        event: { path: { _ilike: "%/div-01" } }
                     }
                     order_by: { createdAt: desc }
                 ) {
                     id
                     amount
                     objectId
+                    createdAt
                     object {
                         id
                         name
@@ -102,18 +104,84 @@ const graphql = {
                     id: projectId,
                     name: projectName,
                     xp: 0,
+                    latestDate: transaction.createdAt || null,
                 })
             }
 
             const project = projectMap.get(projectId)
             project.xp += transaction.amount || 0
+            // Update latest date if this transaction is newer
+            if (transaction.createdAt && (!project.latestDate || transaction.createdAt > project.latestDate)) {
+                project.latestDate = transaction.createdAt
+            }
         })
 
         const projects = Array.from(projectMap.values())
             .sort((a, b) => b.xp - a.xp)
-            .slice(0, 10)
 
         return projects
+    },
+
+    async getLatestProjects(token) {
+        const query = `
+            {
+                transaction(
+                    where: { 
+                        type: { _eq: "xp" }
+                        object: { type: { _eq: "project" } }
+                        event: { path: { _ilike: "%/div-01" } }
+                    }
+                    order_by: { createdAt: desc }
+                ) {
+                    id
+                    amount
+                    objectId
+                    createdAt
+                    object {
+                        id
+                        name
+                        type
+                    }
+                }
+            }
+        `
+
+        const result = await this.request(query, token)
+        const transactions = result.data?.transaction || []
+
+        // Group by project and track latest transaction
+        const projectMap = new Map()
+        transactions.forEach(transaction => {
+            const projectId = transaction.objectId
+            const projectName = transaction.object?.name || `Project ${projectId}`
+
+            if (!projectMap.has(projectId)) {
+                projectMap.set(projectId, {
+                    id: projectId,
+                    name: projectName,
+                    xp: 0,
+                    latestDate: transaction.createdAt || null,
+                })
+            }
+
+            const project = projectMap.get(projectId)
+            project.xp += transaction.amount || 0
+            // Update latest date if this transaction is newer
+            if (transaction.createdAt && (!project.latestDate || transaction.createdAt > project.latestDate)) {
+                project.latestDate = transaction.createdAt
+            }
+        })
+
+        // Sort by latest date (most recent first) and take top 5
+        const latestProjects = Array.from(projectMap.values())
+            .sort((a, b) => {
+                const dateA = a.latestDate || ''
+                const dateB = b.latestDate || ''
+                return dateB.localeCompare(dateA) // Most recent first
+            })
+            .slice(0, 5)
+
+        return latestProjects
     },
 
     async getTotalXP(token) {
@@ -252,236 +320,24 @@ const graphql = {
         }
     },
 
-    async getPiscineStats(token) {
-        const query = `
-            {
-                progress(
-                    where: {
-                        _or: [
-                            { path: { _ilike: "%piscine-js%" } }
-                            { path: { _ilike: "%piscine-go%" } }
-                        ]
-                    }
-                    order_by: { createdAt: desc }
-                ) {
-                    id
-                    grade
-                    objectId
-                    path
-                    createdAt
-                    object {
-                        id
-                        name
-                        type
-                    }
-                }
-            }
-        `
 
-        const result = await this.request(query, token)
-        const progress = result.data?.progress || []
-
-        const passed = progress.filter(p => p.grade === 1 || p.grade > 0).length
-        const failed = progress.filter(p => p.grade === 0).length
-        const total = progress.length
-
-        const exerciseMap = new Map()
-        progress.forEach(item => {
-            const exerciseId = item.objectId
-            const exerciseName = item.object?.name || `Exercise ${exerciseId}`
-
-            if (!exerciseMap.has(exerciseId)) {
-                exerciseMap.set(exerciseId, {
-                    id: exerciseId,
-                    name: exerciseName,
-                    attempts: 0,
-                    passed: false,
-                })
-            }
-
-            const exercise = exerciseMap.get(exerciseId)
-            exercise.attempts += 1
-            if (item.grade === 1 || item.grade > 0) {
-                exercise.passed = true
-            }
-        })
-
-        const exercises = Array.from(exerciseMap.values())
-            .sort((a, b) => b.attempts - a.attempts)
-            .slice(0, 15)
-
-        return {
-            passFail: {
-                passed,
-                failed,
-                total,
-                passPercentage: total > 0 ? ((passed / total) * 100).toFixed(1) : 0,
-            },
-            exercises,
-        }
-    },
-
-    async getTechnologies(token) {
-        // Query projects with their progress to determine completion status per technology
-        const query = `
-            {
-                progress(
-                    where: {
-                        object: { type: { _eq: "project" } }
-                    }
-                ) {
-                    id
-                    grade
-                    objectId
-                    object {
-                        id
-                        name
-                        type
-                        attrs
-                    }
-                    path
-                }
-                transaction(
-                    where: { 
-                        type: { _eq: "xp" }
-                        object: { type: { _eq: "project" } }
-                    }
-                ) {
-                    id
-                    objectId
-                    path
-                    object {
-                        id
-                        name
-                        type
-                        attrs
-                    }
-                }
-            }
-        `
-
-        const result = await this.request(query, token)
-        const progress = result.data?.progress || []
-        const transactions = result.data?.transaction || []
-
-        // Map to track completed projects per technology
-        const techProjectsMap = new Map()
-        // Map to track all projects per technology
-        const techAllProjectsMap = new Map()
-
-        // Process progress to find completed projects (grade > 0 means completed)
-        progress.forEach(item => {
-            if (item.object && item.object.type === 'project') {
-                const projectName = (item.object.name || '').toLowerCase()
-                const path = (item.path || '').toLowerCase()
-
-                // Extract technology from project name or path
-                const tech = this.extractTechnology(projectName, path)
-                if (tech) {
-                    if (!techProjectsMap.has(tech)) {
-                        techProjectsMap.set(tech, new Set())
-                    }
-                    if (!techAllProjectsMap.has(tech)) {
-                        techAllProjectsMap.set(tech, new Set())
-                    }
-
-                    // Add to all projects
-                    techAllProjectsMap.get(tech).add(item.objectId)
-
-                    // Add to completed if grade > 0
-                    if (item.grade > 0) {
-                        techProjectsMap.get(tech).add(item.objectId)
-                    }
-                }
-            }
-        })
-
-        // Also check transactions to find more projects
-        transactions.forEach(transaction => {
-            if (transaction.object && transaction.object.type === 'project') {
-                const projectName = (transaction.object.name || '').toLowerCase()
-                const path = (transaction.path || '').toLowerCase()
-
-                const tech = this.extractTechnology(projectName, path)
-                if (tech) {
-                    if (!techProjectsMap.has(tech)) {
-                        techProjectsMap.set(tech, new Set())
-                    }
-                    if (!techAllProjectsMap.has(tech)) {
-                        techAllProjectsMap.set(tech, new Set())
-                    }
-
-                    techAllProjectsMap.get(tech).add(transaction.objectId)
-                }
-            }
-        })
-
-        // Convert to array format
-        const technologies = []
-        techAllProjectsMap.forEach((projects, tech) => {
-            const completed = techProjectsMap.get(tech) || new Set()
-            technologies.push({
-                name: tech,
-                completed: completed.size,
-                total: projects.size
-            })
-        })
-
-        // Sort by completed projects (descending) and take top 5
-        return technologies
-            .sort((a, b) => b.completed - a.completed)
-            .slice(0, 5)
-    },
-
-    // Helper function to extract technology name from project name or path
-    extractTechnology(projectName, path) {
-        const combined = `${projectName} ${path}`.toLowerCase()
-
-        // Technology keywords mapping
-        const techMap = {
-            'go': ['go', 'golang'],
-            'js': ['js', 'javascript', 'node'],
-            'html': ['html'],
-            'css': ['css'],
-            'python': ['python'],
-            'django': ['django'],
-            'sql': ['sql'],
-            'c': ['c', 'c-language'],
-            'cpp': ['cpp', 'c++'],
-            'docker': ['docker'],
-            'unix': ['unix', 'shell', 'bash'],
-            'git': ['git'],
-        }
-
-        for (const [tech, keywords] of Object.entries(techMap)) {
-            if (keywords.some(keyword => combined.includes(keyword))) {
-                return tech.toUpperCase()
-            }
-        }
-
-        return null
-    },
 
     async getAllUserData(token) {
         try {
-            const [userInfo, projectsData, xpData, auditData, piscineData, techData] = await Promise.all([
+            const [userInfo, projectsData, latestProjectsData, xpData, auditData] = await Promise.all([
                 this.getUserInfo(token),
                 this.getXPByProject(token).catch(err => {
                     console.warn('Could not fetch projects:', err.message)
+                    return []
+                }),
+                this.getLatestProjects(token).catch(err => {
+                    console.warn('Could not fetch latest projects:', err.message)
                     return []
                 }),
                 this.getTotalXP(token),
                 this.getAuditRatio(token).catch(err => {
                     console.warn('Could not fetch audit ratio:', err.message)
                     return { up: 0, down: 0, ratio: '0.00' }
-                }),
-                this.getPiscineStats(token).catch(err => {
-                    console.warn('Could not fetch piscine stats:', err.message)
-                    return { passFail: { passed: 0, failed: 0, total: 0, passPercentage: 0 }, exercises: [] }
-                }),
-                this.getTechnologies(token).catch(err => {
-                    console.warn('Could not fetch technologies:', err.message)
-                    return []
                 }),
             ])
 
@@ -498,8 +354,7 @@ const graphql = {
                 skills: skillsData,
                 audit: auditData,
                 projects: projectsData,
-                piscine: piscineData,
-                technologies: techData,
+                latestProjects: latestProjectsData,
             }
         } catch (error) {
             console.error('Failed to fetch all user data:', error)

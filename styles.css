@@ -224,9 +224,6 @@ input {
     /* Place in column 2 */
     grid-row: 1 / -1;
     /* Span from row 1 to last row */
-    /* OR: */
-    grid-row: 1 / 4;
-    /* Span rows 1, 2, 3 */
 }
 
 .xp-value {
@@ -251,6 +248,87 @@ input {
     border-top: 1px solid #f0f0f0;
     width: 100%;
     overflow-x: auto;
+}
+
+.xp-latest-svg-container {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid #f0f0f0;
+    width: 100%;
+    overflow-x: auto;
+}
+
+/* Pie Chart Styles */
+.pie-chart-container {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 20px;
+    width: 100%;
+}
+
+.pie-chart-svg {
+    width: 100%;
+    max-width: 300px;
+    height: auto;
+}
+
+.pie-segment {
+    transition: opacity 0.2s;
+    stroke: white;
+    stroke-width: 2;
+}
+
+.pie-segment:hover {
+    opacity: 0.8;
+}
+
+.pie-center-text {
+    font-size: 18px;
+    font-weight: bold;
+    fill: #333;
+}
+
+.pie-center-subtext {
+    font-size: 12px;
+    fill: #666;
+}
+
+.pie-legend {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    width: 100%;
+    max-width: 300px;
+}
+
+.pie-legend-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+}
+
+.pie-legend-color {
+    width: 16px;
+    height: 16px;
+    border-radius: 3px;
+    flex-shrink: 0;
+}
+
+.pie-legend-name {
+    flex: 1;
+    color: #333;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.pie-legend-value {
+    color: #666;
+    font-weight: 600;
+    min-width: 40px;
+    text-align: right;
 }
 
 /* Audit Display */

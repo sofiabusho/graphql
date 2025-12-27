@@ -125,7 +125,7 @@ input {
 .profile-container {
     min-height: 100vh;
     background: #f5f7fa;
-    padding: 20px 300px;
+    padding: 20px 280px;
     /* More space on left and right */
 }
 
@@ -164,10 +164,8 @@ input {
 
 .profile-content {
     display: grid;
-    grid-template-columns: 1fr 2fr;
-    /* 2 equal flexible columns */
-    grid-template-rows: repeat(3, auto);
-    /* 3 rows, auto height */
+    grid-template-columns: 1fr 2fr; /* 2 equal flexible columns */
+    grid-template-rows: repeat(3, auto); /* 3 rows, auto height */
     gap: 20px;
 }
 
@@ -246,7 +244,8 @@ input {
 .xp-label {
     display: block;
     font-size: 16px;
-    color: #666;height: auto;
+    color: #666;
+    height: auto;
     text-transform: uppercase;
     letter-spacing: 1px;
 }
@@ -430,18 +429,18 @@ input {
     padding: 12px;
     background: #f8f9fa;
     border-radius: 8px;
-    border-left: 4px solid #667eea;
 }
 
 .skill-name {
     color: #333;
     font-weight: 500;
+    font-size: 24px;
 }
 
 .skill-amount {
     color: #667eea;
     font-weight: 600;
-    font-size: 14px;
+    font-size: 24px;
 }
 
 

@@ -2,6 +2,17 @@
 // UI MANAGEMENT
 // ============================================================================
 
+// Helper function to format XP numbers in kB
+function formatXP(value) {
+    if (!value || value === 0) return '0'
+    const kB = value / 1000
+    if (kB >= 100) {
+        return `${Math.round(kB)} kB`
+    } else {
+        return `${kB.toFixed(1)} kB`
+    }
+}
+
 const ui = {
     showLogin() {
         document.getElementById('login-page').style.display = 'flex'
@@ -47,7 +58,7 @@ const ui = {
         }
 
         // XP
-        document.getElementById('xp-total').textContent = xp?.total?.toLocaleString() || '0'
+        document.getElementById('xp-total').textContent = formatXP(xp?.total) || '0'
 
         // XP Projects SVG - Pie Chart (all projects)
         const xpProjectsContainer = document.getElementById('xp-projects-svg-container')
@@ -181,20 +192,22 @@ const ui = {
             line.setAttribute('y2', chartHeight - padding.bottom)
             line.setAttribute('stroke', '#e0e0e0')
             line.setAttribute('stroke-width', '1')
-            if (i === 0) {
+            if (i === 0 || i === numGridLines) {
                 line.setAttribute('stroke', '#999')
                 line.setAttribute('stroke-width', '2')
             }
             gridLines.appendChild(line)
 
-            // X-axis labels
-            const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-            label.setAttribute('x', x)
-            label.setAttribute('y', chartHeight - padding.bottom + 20)
-            label.setAttribute('text-anchor', 'middle')
-            label.setAttribute('class', 'axis-label')
-            label.textContent = Math.round(xpValue).toLocaleString()
-            gridLines.appendChild(label)
+            // X-axis labels - only show for 0 and maxXP
+            if (i === 0 || i === numGridLines) {
+                const label = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+                label.setAttribute('x', x)
+                label.setAttribute('y', chartHeight - padding.bottom + 20)
+                label.setAttribute('text-anchor', 'middle')
+                label.setAttribute('class', 'axis-label')
+                label.textContent = formatXP(Math.round(xpValue))
+                gridLines.appendChild(label)
+            }
         }
 
         svg.appendChild(gridLines)
@@ -255,7 +268,7 @@ const ui = {
                 ratioText.setAttribute('y', y)
                 ratioText.setAttribute('dominant-baseline', 'middle')
                 ratioText.setAttribute('class', 'dot-ratio-text')
-                ratioText.textContent = `${project.xp.toLocaleString()}/${totalXP.toLocaleString()}`
+                ratioText.textContent = formatXP(project.xp)
                 svg.appendChild(ratioText)
             }
         })

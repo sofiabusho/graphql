@@ -150,18 +150,80 @@ input {
 
 .logout-button {
     padding: 10px 20px;
-    background: #dc3545;
-    color: white;
+
+    /* METALLIC EFFECT - Step by step: */
+
+    /* 1. Base gradient: Creates the metallic surface variation */
+    /*    Light at top (highlight), darker at bottom (shadow) */
+    background: linear-gradient(135deg,
+            #E8EAED 0%,
+            /* Top highlight - simulates light hitting top edge */
+            #C0C5C9 50%,
+            /* Middle - base metallic color */
+            #9CA3A8 100%
+            /* Bottom - darker shadow area */
+        );
+
+    /* 2. Inner shadows: Creates depth and 3D appearance */
+    /*    Inset shadows go INSIDE the element */
+    box-shadow:
+        /* Inner highlight on top - simulates light reflection */
+        inset 0 2px 4px rgba(255, 255, 255, 0.4),
+        /* Inner shadow on bottom - creates depth */
+        inset 0 -2px 4px rgba(0, 0, 0, 0.2),
+        /* Outer shadow - makes button appear raised from surface */
+        0 4px 8px rgba(0, 0, 0, 0.15);
+
+    color: #333;
+    /* Dark text for contrast on light metallic */
     border: none;
     border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
-    transition: background 0.3s;
+    transition: all 0.3s ease;
+    /* Smooth transition for hover */
 }
 
 .logout-button:hover {
-    background: #c82333;
+    /* Enhanced metallic on hover - brighter highlights */
+    background: linear-gradient(135deg,
+            #F0F2F5 0%,
+            /* Brighter highlight */
+            #D0D5D9 50%,
+            /* Slightly lighter base */
+            #A8ADB2 100%
+            /* Lighter shadow */
+        );
+
+    /* Stronger shadows on hover - more pronounced 3D effect */
+    box-shadow:
+        inset 0 2px 6px rgba(255, 255, 255, 0.5),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.3),
+        0 6px 12px rgba(0, 0, 0, 0.2);
+
+    transform: translateY(-1px);
+    /* Slight lift effect */
+}
+
+.logout-button:active {
+    /* Pressed state - reverse the effect */
+    background: linear-gradient(135deg,
+            #9CA3A8 0%,
+            /* Darker on top */
+            #C0C5C9 50%,
+            #E8EAED 100%
+            /* Lighter on bottom (inverted) */
+        );
+
+    /* Inset shadow makes it look pressed in */
+    box-shadow:
+        inset 0 2px 4px rgba(0, 0, 0, 0.3),
+        inset 0 -2px 4px rgba(255, 255, 255, 0.2),
+        0 2px 4px rgba(0, 0, 0, 0.1);
+
+    transform: translateY(0);
+    /* Back to original position */
 }
 
 .profile-content {

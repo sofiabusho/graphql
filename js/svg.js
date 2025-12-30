@@ -13,6 +13,21 @@ function formatXP(value) {
     }
 }
 
+// Helper function to format numbers in MB
+function formatMB(value) {
+    if (!value || value === 0) return '0'
+    const MB = value / 1000000
+    return `${MB.toFixed(2)} MB`
+}
+
+// Helper function to round audit ratio to one decimal place
+function formatRatio(ratio) {
+    if (!ratio || ratio === '∞' || ratio === 'Infinity') return ratio
+    const numRatio = parseFloat(ratio)
+    if (isNaN(numRatio)) return ratio
+    return numRatio.toFixed(1)
+}
+
 const ui = {
     showLogin() {
         document.getElementById('login-page').style.display = 'flex'
@@ -91,9 +106,9 @@ const ui = {
         }
 
         // Audit
-        document.getElementById('audit-ratio').textContent = audit?.ratio || '0.00'
-        document.getElementById('audit-up').textContent = audit?.up || '0'
-        document.getElementById('audit-down').textContent = audit?.down || '0'
+        document.getElementById('audit-ratio').textContent = formatRatio(audit?.ratio) || '0'
+        document.getElementById('audit-up').textContent = formatMB(audit?.up) || '0'
+        document.getElementById('audit-down').textContent = formatMB(audit?.down) || '0'
 
         // Audit Ratio SVG
         const auditSvgContainer = document.getElementById('audit-ratio-svg-container')
@@ -249,11 +264,15 @@ const ui = {
             svg.appendChild(circle)
 
             // Project name label (Y-axis) - full name with text wrapping using foreignObject
+            // Ensure it stays within the left padding area (red limits)
+            const labelPadding = 13 // Small padding from left edge
+            const maxLabelWidth = padding.left - labelPadding - 5 // Stay within left boundary
             const foreignObject = document.createElementNS('http://www.w3.org/2000/svg', 'foreignObject')
-            foreignObject.setAttribute('x', '0')
-            foreignObject.setAttribute('y', (y - 15).toString())
-            foreignObject.setAttribute('width', (padding.left - 10).toString())
-            foreignObject.setAttribute('height', '30')
+            foreignObject.setAttribute('x', labelPadding.toString())
+            foreignObject.setAttribute('y', (y - 20).toString())
+            foreignObject.setAttribute('width', maxLabelWidth.toString())
+            foreignObject.setAttribute('height', '45')
+            foreignObject.setAttribute('overflow', 'hidden')
 
             const div = document.createElement('div')
             div.className = 'project-label-wrapper'
@@ -261,7 +280,7 @@ const ui = {
             foreignObject.appendChild(div)
             svg.appendChild(foreignObject)
 
-            // Ratio text: "xp/totalXP" next to the dot
+            // Ratio text: "xp" next to the dot
             if (totalXP > 0) {
                 const ratioText = document.createElementNS('http://www.w3.org/2000/svg', 'text')
                 ratioText.setAttribute('x', x + dotRadius + 8)
@@ -319,6 +338,22 @@ const ui = {
         svg.setAttribute('viewBox', `0 0 ${size} ${size}`)
         svg.className = 'chart-svg pie-chart-svg'
 
+        // Create tooltip text (initially hidden) - positioned at top of pie
+        const tooltipText = document.createElementNS('http://www.w3.org/2000/svg', 'text')
+        tooltipText.setAttribute('class', 'pie-tooltip')
+        tooltipText.setAttribute('fill', '#333') // Dark text for visibility
+        tooltipText.setAttribute('font-size', '8')
+        tooltipText.setAttribute('font-weight', '400')
+        tooltipText.setAttribute('text-anchor', 'middle')
+        tooltipText.setAttribute('dominant-baseline', 'middle')
+        tooltipText.setAttribute('x', center)
+        tooltipText.setAttribute('y', center - radius - 15) // Position above the pie
+        tooltipText.style.opacity = '0'
+        tooltipText.style.pointerEvents = 'none'
+        tooltipText.style.transition = 'opacity 0.2s'
+        // Add text shadow for better visibility (using filter)
+        tooltipText.setAttribute('filter', 'drop-shadow(0 1px 2px rgba(255, 255, 255, 0.8))')
+
         let currentAngle = -90 // Start at top
 
         data.forEach((project, index) => {
@@ -354,14 +389,21 @@ const ui = {
             pathEl.setAttribute('data-xp', project.xp)
             pathEl.setAttribute('data-percentage', percentage.toFixed(1))
 
-            // Add hover effect
+            // Add hover effect with tooltip
             pathEl.style.cursor = 'pointer'
             pathEl.style.transition = 'opacity 0.2s'
+
             pathEl.addEventListener('mouseenter', function () {
                 this.style.opacity = '0.8'
+
+                // Show tooltip with project name and XP at top of pie
+                tooltipText.textContent = `${project.name} - ${formatXP(project.xp)}`
+                tooltipText.style.opacity = '1'
             })
+
             pathEl.addEventListener('mouseleave', function () {
                 this.style.opacity = '1'
+                tooltipText.style.opacity = '0'
             })
 
             // Animate the path
@@ -378,6 +420,8 @@ const ui = {
             currentAngle += angle
         })
 
+        // Append tooltip text after all paths so it appears on top
+        svg.appendChild(tooltipText)
 
         // Create legend
         const legend = document.createElement('div')
@@ -489,15 +533,6 @@ const ui = {
             svg.appendChild(fillPathEl)
         }
 
-        // Center text showing ratio
-        const centerText = document.createElementNS('http://www.w3.org/2000/svg', 'text')
-        centerText.setAttribute('x', center)
-        centerText.setAttribute('y', center + 5)
-        centerText.setAttribute('text-anchor', 'middle')
-        centerText.className = 'audit-gauge-text'
-        centerText.textContent = ratio
-
-        svg.appendChild(centerText)
 
         container.appendChild(svg)
         return container

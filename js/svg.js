@@ -1,7 +1,3 @@
-// ============================================================================
-// UI MANAGEMENT
-// ============================================================================
-
 // Helper function to format XP numbers in kB
 function formatXP(value) {
     if (!value || value === 0) return '0'

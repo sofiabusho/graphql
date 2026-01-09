@@ -1,7 +1,3 @@
-// ============================================================================
-// AUTHENTICATION SERVICE
-// ============================================================================
-
 const DOMAIN = 'platform.zone01.gr'
 const SIGNIN_URL = `https://${DOMAIN}/api/auth/signin`
 const GRAPHQL_URL = `https://${DOMAIN}/api/graphql-engine/v1/graphql`

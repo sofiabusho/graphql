@@ -4,7 +4,7 @@ A modern, interactive profile page that displays your school information using G
 
 **Built with vanilla JavaScript, HTML, and CSS** - no React, no Node.js, no build tools required!
 
-## 🎯 Project Objectives
+## Project Objectives
 
 - Learn GraphQL query language
 - Create a profile page displaying user information
@@ -12,7 +12,7 @@ A modern, interactive profile page that displays your school information using G
 - Build interactive SVG graphs for statistics
 - Deploy the application
 
-## 📁 Project Structure
+## Project Structure
 
 ```
 graphql/
@@ -22,7 +22,7 @@ graphql/
 └── README.md
 ```
 
-## 🚀 Getting Started
+## Getting Started
 
 ### Prerequisites
 
@@ -35,28 +35,12 @@ graphql/
 1. **Clone or download this repository**
 
 2. **Open the project:**
-   - **Option 1 (Recommended)**: Use a local web server
-     ```bash
-     # Using Python 3
-     python -m http.server 8000
-     
-     # Using Python 2
-     python -m SimpleHTTPServer 8000
-     
-     # Using Node.js (if you have http-server installed)
-     npx http-server -p 8000
-     ```
-     Then open `http://localhost:8000` in your browser
-   
-   - **Option 2**: Simply open `index.html` directly in your browser
-     - Note: Some browsers may block CORS requests when opening files directly
-     - For production, always use a web server
 
-3. **Configure the domain** (if needed):
-   - The domain is set to `platform.zone01.gr` in `app.js`
-   - If you need to change it, edit the `DOMAIN` constant in `app.js`
+##  Deployment
 
-## 📚 Features
+
+
+## Features
 
 ### Authentication
 - Login with username/email and password
@@ -71,15 +55,13 @@ graphql/
 - **Top Skills**: Top 5 skills with percentages
 
 ### Statistics & Visualizations
-- **XP by Project**: Horizontal bar chart showing XP earned per project
-- **Piscine Stats**: 
-  - Pass/Fail ratio donut chart
-  - Exercise attempts bar chart
-- **Technologies**: Horizontal bar chart showing XP by technology
+- **XP by Project**
+- **XP by Latest Activity (Top 5)**: 
+- **Audit Ratio**
 
 All charts are interactive SVG visualizations with smooth animations.
 
-## 🔑 How Authentication Works
+## How Authentication Works
 
 1. **User enters credentials** → Login form
 2. **Credentials encoded** → Base64(username:password)
@@ -87,7 +69,7 @@ All charts are interactive SVG visualizations with smooth animations.
 4. **Receive JWT** → Token saved to localStorage
 5. **Token used** → Sent with every GraphQL request
 
-## 🛠️ Technical Details
+## Technical Details
 
 ### GraphQL Queries
 The app uses several GraphQL queries to fetch:
@@ -114,7 +96,7 @@ This project uses only:
 
 No frameworks, no build tools, no package managers required!
 
-## 📝 File Structure Explained
+## File Structure Explained
 
 - **index.html**: Contains the login and profile page structure
 - **styles.css**: All CSS styles for login, profile, and charts
@@ -125,59 +107,7 @@ No frameworks, no build tools, no package managers required!
   - `ui`: DOM manipulation and chart rendering
   - `app`: Main application logic
 
-## 🐛 Troubleshooting
-
-**Login not working?**
-- Check that you have internet connection
-- Verify your credentials are correct
-- Check browser console for error messages (F12 → Console)
-- Ensure CORS is not blocking requests (use a web server, not file://)
-
-**Token not saving?**
-- Check browser localStorage (DevTools → Application → Local Storage)
-- Ensure no browser extensions are blocking storage
-- Try a different browser
-
-**Charts not displaying?**
-- Check browser console for JavaScript errors
-- Ensure GraphQL queries are returning data
-- Verify SVG support in your browser
-
-**CORS errors?**
-- Always use a web server, not file:// protocol
-- The API must allow requests from your origin
-- Check browser console for specific CORS error messages
-
-## 📖 Resources
-
-- [GraphQL Documentation](https://graphql.org/learn/)
-- [JWT.io](https://jwt.io) - JWT token decoder
-- [MDN Web Docs](https://developer.mozilla.org/) - HTML, CSS, JavaScript reference
-- [SVG Tutorial](https://developer.mozilla.org/en-US/docs/Web/SVG/Tutorial)
-
-## 🎓 Learning Tips
-
-- Open browser DevTools (F12) to see network requests and console logs
-- Inspect the GraphQL queries in `app.js` to understand the data structure
-- Experiment with the SVG chart code to customize visualizations
-- Check localStorage to see how JWT tokens are stored
-- Read the comments in `app.js` to understand each function
-
-## 🌐 Deployment
-
-To deploy this project:
-
-1. **Static Hosting**: Upload `index.html`, `styles.css`, and `app.js` to any static hosting service:
-   - GitHub Pages
-   - Netlify
-   - Vercel
-   - AWS S3
-   - Any web server
-
-2. **No Build Step Required**: Since it's vanilla JS, just upload the files!
-
-3. **HTTPS Required**: For production, ensure your site uses HTTPS (required for secure API calls)
 
 ---
 
-**Happy Coding! 🚀**
+

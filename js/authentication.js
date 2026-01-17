@@ -15,10 +15,47 @@ const auth = {
             })
 
             if (!response.ok) {
-                const errorText = await response.text()
+                let errorMessage = 'Invalid credentials. Please check your username/email and password.'
+
+                try {
+                    // Clone response so we can try multiple parsing methods
+                    const clonedResponse = response.clone()
+
+                    // Try to parse as JSON first (server typically returns JSON error)
+                    try {
+                        const errorData = await response.json()
+                        // Extract server error message, or use custom message
+                        const serverError = errorData.error || errorData.message
+                        errorMessage = serverError || errorMessage
+                        // Optionally customize the message here:
+                        if (serverError && serverError.includes('does not exist')) {
+                            errorMessage = 'Invalid credentials. Please check your username/email or password.'
+                        }
+                    } catch (jsonError) {
+                        // If JSON parsing fails, try to get text from cloned response
+                        try {
+                            const errorText = await clonedResponse.text()
+                            // Try parsing the text as JSON (in case content-type was wrong)
+                            try {
+                                const parsed = JSON.parse(errorText)
+                                errorMessage = parsed.error || parsed.message || errorText || errorMessage
+                            } catch {
+                                // Not JSON, use text as-is
+                                errorMessage = errorText || errorMessage
+                            }
+                        } catch (textError) {
+                            // Could not read text, use default message
+                            console.warn('Could not read error response:', textError)
+                        }
+                    }
+                } catch (error) {
+                    // If anything fails, use default message
+                    console.warn('Error handling failed response:', error)
+                }
+
                 return {
                     success: false,
-                    error: errorText || 'Invalid credentials. Please check your username/email and password.',
+                    error: errorMessage,
                 }
             }
 

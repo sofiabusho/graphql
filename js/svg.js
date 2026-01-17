@@ -379,7 +379,7 @@ const ui = {
 
             const pathEl = document.createElementNS('http://www.w3.org/2000/svg', 'path')
             pathEl.setAttribute('d', fullPath)
-            pathEl.setAttribute('fill', `hsl(${index * 360 / data.length}, 70%, 60%)`)
+            pathEl.setAttribute('fill', `hsl(${160 + (index * 360 / data.length)}, 50%, 60%)`)
             pathEl.className = 'pie-segment'
             pathEl.setAttribute('data-name', project.name)
             pathEl.setAttribute('data-xp', project.xp)

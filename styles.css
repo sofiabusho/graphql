@@ -60,7 +60,7 @@ input {
             #e0e0e0 20px);
     border-radius: 12px;
     padding: clamp(20px, 5vw, 40px);
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.2);
     width: 100%;
     max-width: 400px;
 }
@@ -102,7 +102,7 @@ input {
 .form-group input {
     padding: 12px;
     padding-right: 45px;
-    border: 2px solid #09090a;
+    border: 1px solid rgb(254, 255, 254);
     border-radius: 8px;
     font-size: 16px;
     transition: border-color 0.3s;
@@ -110,7 +110,7 @@ input {
 
 .form-group input:focus {
     outline: none;
-    border-color: #667eea;
+    border: 2px solid #b3ea66;
 }
 
 .form-group input:disabled {
@@ -231,7 +231,7 @@ input {
             rgba(224, 224, 224, 0.5) 20px);
     padding: clamp(16px, 2.5vw, 20px) clamp(16px, 3vw, 30px);
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
 .profile-header h1 {
@@ -308,7 +308,7 @@ input {
             #e0e0e0 20px);
     padding: clamp(16px, 3vw, 30px);
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
 }
 
 .profile-card h2 {
@@ -334,6 +334,7 @@ input {
     background: #f0ecea;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
+    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
 }
 
 .info-label {
@@ -362,6 +363,7 @@ input {
     background: #f0ecea;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
+    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
 }
 
 .xp-card {
@@ -397,6 +399,7 @@ input {
     background: #f0ecea;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
+    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
 }
 
 .xp-latest-svg-container {
@@ -407,6 +410,7 @@ input {
     border: 1px solid #e0e0e0;
     width: 100%;
     overflow-x: auto;
+    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
 }
 
 /* Pie Chart Styles */
@@ -489,6 +493,7 @@ input {
     border: 1px solid #e0e0e0;
     text-align: center;
     padding: 20px 0;
+    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
 }
 
 .audit-svg-container {
@@ -576,6 +581,7 @@ input {
     background: #f0ecea;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
+    box-shadow: 0 0px 5px rgba(0, 0, 0, 0.2);
 }
 
 .skill-name {
@@ -627,7 +633,7 @@ input {
     padding: 50px;
     background: #f0ecea;
     border-radius: 12px;
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 20px 80px rgba(0, 0, 0, 0.2);
 }
 
 .error-state h2 {

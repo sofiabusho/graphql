@@ -27,12 +27,37 @@ input {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    padding: 20px;
+    background-color: #f0ecea;
+    background-image:
+        /* Horizontal lines */
+        repeating-linear-gradient(0deg,
+            transparent,
+            transparent 19px,
+            #e0e0e0 19px,
+            #e0e0e0 20px),
+        /* Vertical lines */
+        repeating-linear-gradient(90deg,
+            transparent,
+            transparent 19px,
+            #e0e0e0 19px,
+            #e0e0e0 20px);
 }
 
 .login-card {
-    background: #f0ecea;
+    background-color: #f0ecea;
+    background-image:
+        /* Horizontal lines */
+        repeating-linear-gradient(0deg,
+            transparent,
+            transparent 19px,
+            #e0e0e0 19px,
+            #e0e0e0 20px),
+        /* Vertical lines */
+        repeating-linear-gradient(90deg,
+            transparent,
+            transparent 19px,
+            #e0e0e0 19px,
+            #e0e0e0 20px);
     border-radius: 12px;
     padding: clamp(20px, 5vw, 40px);
     box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
@@ -60,10 +85,12 @@ input {
     gap: 20px;
 }
 
+
 .form-group {
     display: flex;
     flex-direction: column;
     gap: 8px;
+    position: relative;
 }
 
 .form-group label {
@@ -74,7 +101,8 @@ input {
 
 .form-group input {
     padding: 12px;
-    border: 2px solid #e0e0e0;
+    padding-right: 45px;
+    border: 2px solid #09090a;
     border-radius: 8px;
     font-size: 16px;
     transition: border-color 0.3s;
@@ -86,48 +114,6 @@ input {
 }
 
 .form-group input:disabled {
-    background-color: #f5f5f5;
-    cursor: not-allowed;
-}
-
-.error-message {
-    background-color: #fee;
-    color: #c33;
-    padding: 12px;
-    border-radius: 8px;
-    font-size: 14px;
-    border: 1px solid #fcc;
-}
-
-.login-button {
-    padding: 14px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: #f0ecea;
-    border: none;
-    border-radius: 8px;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 0.2s, box-shadow 0.2s;
-}
-
-.login-button:hover:not(:disabled) {
-    transform: translateY(-2px);
-    box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
-}
-
-.login-button:disabled {
-    opacity: 0.6;
-    cursor: not-allowed;
-}
-
-/* Profile Styles */
-.profile-container {
-    min-height: 100vh;
-    background: #f5f7fa;
-    padding: 20px clamp(20px, 18vw, 600px);
-    /* More space on left and right */
-    /* Classic Notebook Checkered Background */
     background-color: #f0ecea;
     background-image:
         /* Horizontal lines */
@@ -142,6 +128,86 @@ input {
             transparent 19px,
             #e0e0e0 19px,
             #e0e0e0 20px);
+    cursor: not-allowed;
+}
+
+.toggle-password-button {
+    position: absolute;
+    right: 10px;
+    top: 50%;
+    bottom: 50%;
+    padding: 10px;
+    transform: translateY(-50%);
+    background: none;
+    border: none;
+    color: #666;
+}
+
+.toggle-password-button:hover {
+    cursor: pointer;
+}
+
+.error-message {
+    background-color: #fee;
+    color: #c33;
+    padding: 12px;
+    border-radius: 8px;
+    font-size: 14px;
+    border: 1px solid #fcc;
+}
+
+.login-button {
+    padding: 14px;
+    background-color: #f0ecea;
+    box-shadow:
+        inset 0 2px 6px rgba(255, 255, 255, 0.5),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.3),
+        0 6px 12px rgba(0, 0, 0, 0.2);
+
+    color: #333;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.login-button:hover:not(:disabled) {
+    background-color: #f0ecea;
+    box-shadow:
+        inset 0 2px 6px rgba(240, 239, 239, 0.5),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.3),
+        0 6px 12px rgba(0, 0, 0, 0.2);
+
+    transform: translateY(-1px);
+}
+
+.login-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Profile Styles */
+.profile-container {
+    min-height: 100vh;
+    padding: 20px clamp(20px, 18vw, 600px);
+    /* More space on left and right */
+    /* Classic Notebook Checkered Background */
+    background-color: rgba(240, 236, 234, 0.7);
+    background-image:
+        /* Horizontal lines */
+        repeating-linear-gradient(0deg,
+            transparent,
+            transparent 19px,
+            rgba(224, 224, 224, 0.5) 19px,
+            rgba(224, 224, 224, 0.5) 20px),
+        /* Vertical lines */
+        repeating-linear-gradient(90deg,
+            transparent,
+            transparent 19px,
+            rgba(224, 224, 224, 0.5) 19px,
+            rgba(224, 224, 224, 0.5) 20px);
 }
 
 .profile-header {
@@ -149,7 +215,20 @@ input {
     justify-content: space-between;
     align-items: center;
     margin-bottom: clamp(20px, 3vw, 30px);
-    background: #f0ecea;
+    background-color: rgba(240, 236, 234, 0.7);
+    background-image:
+        /* Horizontal lines */
+        repeating-linear-gradient(0deg,
+            transparent,
+            transparent 19px,
+            rgba(224, 224, 224, 0.5) 19px,
+            rgba(224, 224, 224, 0.5) 20px),
+        /* Vertical lines */
+        repeating-linear-gradient(90deg,
+            transparent,
+            transparent 19px,
+            rgba(224, 224, 224, 0.5) 19px,
+            rgba(224, 224, 224, 0.5) 20px);
     padding: clamp(16px, 2.5vw, 20px) clamp(16px, 3vw, 30px);
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -166,54 +245,25 @@ input {
 .logout-button {
     padding: 10px 20px;
 
-    /* METALLIC EFFECT - Step by step: */
-
-    /* 1. Base gradient: Creates the metallic surface variation */
-    /*    Light at top (highlight), darker at bottom (shadow) */
-    background: linear-gradient(135deg,
-            #E8EAED 0%,
-            /* Top highlight - simulates light hitting top edge */
-            #C0C5C9 50%,
-            /* Middle - base metallic color */
-            #9CA3A8 100%
-            /* Bottom - darker shadow area */
-        );
-
-    /* 2. Inner shadows: Creates depth and 3D appearance */
-    /*    Inset shadows go INSIDE the element */
+    background-color: #f0ecea;
     box-shadow:
-        /* Inner highlight on top - simulates light reflection */
-        inset 0 2px 4px rgba(255, 255, 255, 0.4),
-        /* Inner shadow on bottom - creates depth */
-        inset 0 -2px 4px rgba(0, 0, 0, 0.2),
-        /* Outer shadow - makes button appear raised from surface */
-        0 4px 8px rgba(0, 0, 0, 0.15);
+        inset 0 2px 6px rgba(255, 255, 255, 0.5),
+        inset 0 -2px 6px rgba(0, 0, 0, 0.3),
+        0 6px 12px rgba(0, 0, 0, 0.2);
 
     color: #333;
-    /* Dark text for contrast on light metallic */
     border: none;
     border-radius: 8px;
     font-size: 14px;
     font-weight: 500;
     cursor: pointer;
     transition: all 0.3s ease;
-    /* Smooth transition for hover */
 }
 
 .logout-button:hover {
-    /* Enhanced metallic on hover - brighter highlights */
-    background: linear-gradient(135deg,
-            #F0F2F5 0%,
-            /* Brighter highlight */
-            #D0D5D9 50%,
-            /* Slightly lighter base */
-            #A8ADB2 100%
-            /* Lighter shadow */
-        );
-
-    /* Stronger shadows on hover - more pronounced 3D effect */
+    background-color: #f0ecea;
     box-shadow:
-        inset 0 2px 6px rgba(255, 255, 255, 0.5),
+        inset 0 2px 6px rgba(240, 239, 239, 0.5),
         inset 0 -2px 6px rgba(0, 0, 0, 0.3),
         0 6px 12px rgba(0, 0, 0, 0.2);
 
@@ -222,16 +272,7 @@ input {
 }
 
 .logout-button:active {
-    /* Pressed state - reverse the effect */
-    background: linear-gradient(135deg,
-            #9CA3A8 0%,
-            /* Darker on top */
-            #C0C5C9 50%,
-            #E8EAED 100%
-            /* Lighter on bottom (inverted) */
-        );
-
-    /* Inset shadow makes it look pressed in */
+    background-color: #f0ecea;
     box-shadow:
         inset 0 2px 4px rgba(0, 0, 0, 0.3),
         inset 0 -2px 4px rgba(255, 255, 255, 0.2),
@@ -251,7 +292,20 @@ input {
 }
 
 .profile-card {
-    background: #f0ecea;
+    background-color: #f0ecea;
+    background-image:
+        /* Horizontal lines */
+        repeating-linear-gradient(0deg,
+            transparent,
+            transparent 19px,
+            #e0e0e0 19px,
+            #e0e0e0 20px),
+        /* Vertical lines */
+        repeating-linear-gradient(90deg,
+            transparent,
+            transparent 19px,
+            #e0e0e0 19px,
+            #e0e0e0 20px);
     padding: clamp(16px, 3vw, 30px);
     border-radius: 12px;
     box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
@@ -277,7 +331,7 @@ input {
     display: flex;
     flex-direction: column;
     padding: clamp(12px, 2.5vw, 20px);
-    background: #f5f7fa;
+    background: #f0ecea;
     border-radius: 8px;
     border: 1px solid #e0e0e0;
 }
@@ -305,6 +359,9 @@ input {
 .xp-display {
     text-align: center;
     padding: 20px 0;
+    background: #f0ecea;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
 }
 
 .xp-card {
@@ -334,15 +391,20 @@ input {
 .xp-svg-container {
     margin-top: 20px;
     padding-top: 20px;
-    border-top: 1px solid #f0f0f0;
+    /* border-top: 1px solid #f0f0f0; */
     width: 100%;
     overflow-x: auto;
+    background: #f0ecea;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
 }
 
 .xp-latest-svg-container {
     margin-top: 20px;
     padding-top: 20px;
-    border-top: 1px solid #f0f0f0;
+    background: #f0ecea;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
     width: 100%;
     overflow-x: auto;
 }
@@ -422,6 +484,9 @@ input {
 
 /* Audit Display */
 .audit-display {
+    background: #f0ecea;
+    border-radius: 8px;
+    border: 1px solid #e0e0e0;
     text-align: center;
     padding: 20px 0;
 }
@@ -508,8 +573,9 @@ input {
     justify-content: space-between;
     align-items: center;
     padding: 12px;
-    background: #f8f9fa;
+    background: #f0ecea;
     border-radius: 8px;
+    border: 1px solid #e0e0e0;
 }
 
 .skill-name {
@@ -638,6 +704,7 @@ input {
     width: 100%;
     height: auto;
     max-height: 400px;
+
 }
 
 .axis-label {

@@ -1,8 +1,12 @@
 # GraphQL Profile Project
 
-A modern, interactive profile page that displays your school information using GraphQL queries. This project demonstrates GraphQL querying, JWT authentication, and SVG-based data visualization.
+An interactive profile page that displays Zone01 school information using GraphQL queries. 
+** This project demonstrates: **
+- GraphQL querying, 
+- JWT authentication, and 
+- SVG-based data visualization.
 
-**Built with vanilla JavaScript, HTML, and CSS** - no React, no Node.js, no build tools required!
+**Built with vanilla JavaScript, HTML, and CSS** 
 
 ## Project Objectives
 
@@ -26,7 +30,7 @@ graphql/
 
 ### Prerequisites
 
-- A modern web browser (Chrome, Firefox, Safari, Edge)
+- A web browser (Chrome, Firefox, Safari, Edge)
 - A web server (for local development) or just open `index.html` directly
 - Access to the Zone01 platform API
 
@@ -34,11 +38,20 @@ graphql/
 
 1. **Clone or download this repository**
 
+```
+git clone https://platform.zone01.gr/git/sbusho/graphql
+
+```
+
 2. **Open the project:**
-
-##  Deployment
-
-
+```
+Right click Index.html and select 'Open with Live Server'
+```
+OR
+###  Deployment
+```
+graphql-sbusho.netlify.app
+```
 
 ## Features
 
@@ -56,10 +69,9 @@ graphql/
 
 ### Statistics & Visualizations
 - **XP by Project**
-- **XP by Latest Activity (Top 5)**: 
+- **XP by Latest Activity (Top 5)** 
 - **Audit Ratio**
 
-All charts are interactive SVG visualizations with smooth animations.
 
 ## How Authentication Works
 
@@ -76,9 +88,7 @@ The app uses several GraphQL queries to fetch:
 - User information (name, login, email)
 - XP transactions (total and by project)
 - Skills data
-- Audit ratios
-- Piscine progress
-- Technology usage
+- Audit ratio
 
 ### SVG Charts
 All charts are created using vanilla JavaScript and SVG:
@@ -94,7 +104,6 @@ This project uses only:
 - **Vanilla JavaScript (ES6+)** for functionality
 - **SVG** for data visualization
 
-No frameworks, no build tools, no package managers required!
 
 ## File Structure Explained
 
@@ -102,12 +111,14 @@ No frameworks, no build tools, no package managers required!
 - **styles.css**: All CSS styles for login, profile, and charts
 - **app.js**: Contains all JavaScript code organized into modules:
   - `storage`: Token management utilities
-  - `auth`: Authentication functions
+  - `authentication`: Authentication functions
   - `graphql`: GraphQL query functions
-  - `ui`: DOM manipulation and chart rendering
   - `app`: Main application logic
+  - `svg`: SVG chart creation and visualization
 
+## Authors
 
----
-
+```
+ 📏 Sofia Busho ✏️
+```
 
